@@ -1,0 +1,26 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+ name: spekt8-access-clusterrolebinding
+subjects:
+ - kind: ServiceAccount
+   name: default #todo: which one?
+   namespace: spekt8 #todo: which one?
+roleRef:
+ kind: ClusterRole
+ name: spekt8-access-clusterrole
+ apiGroup: rbac.authorization.k8s.io
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: spekt8-access-clusterrole
+rules:
+#- apiGroups: ["*"]
+#  resources: ["*"]
+#  verbs: ["*"]
+- apiGroups: ["*"]
+  resources: ["*"] #least privilege principle.. ToDo: what about statefulsets?
+  verbs: ["watch", "list", "get"] #least privilege principle..
+

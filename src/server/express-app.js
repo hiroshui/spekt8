@@ -4,7 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const path = require('path');
 
-// k8s javascript client require
+// k8s javascript client requireconst apiClient
 const k8s = require('@kubernetes/client-node');
 const kc = new k8s.KubeConfig();
 kc.loadFromDefault();
@@ -12,13 +12,19 @@ kc.loadFromDefault();
 /* Core_v1Api docs: https://github.com/kubernetes-client/java/blob/master/kubernetes/docs/CoreV1Api.md */
 // core_v1api -- pods, services (may include nodeport, loadbalancer)
 // optional: serviceaccount, resourcequota, replication controller if needed
-const k8sApi = kc.makeApiClient(k8s.Core_v1Api);
+const k8sApi = kc.makeApiClient(k8s.Core_v1Api); //Core_v1Api previously
 
 /* Extensions_v1beta1Api docs: https://github.com/kubernetes-client/java/blob/master/kubernetes/docs/ExtensionsV1beta1Api.md */
 // extensions_v1beta1api -- ingress, deployment
 // optional: daemonset, and network policy as well as replica set if needed
-const k8sApi2 = kc.makeApiClient(k8s.Extensions_v1beta1Api);
+const k8sAppApi = kc.makeApiClient(k8s.Apps_v1Api); //previously Extensions_v1beta1Api
 
+const k8sNetworkApi = kc.makeApiClient(k8s.Extensions_v1beta1Api);
+
+//todo: get all namespaces?
+const namespace = process.env.NAMESPACE;
+
+console.log("using namespace: " + namespace);
 
 // use statements
 app.use(bodyParser.json());
@@ -42,7 +48,7 @@ app.get('/main.js', (req, res) => {
 });
 
 app.get('/pod', (req, res) => {
-  k8sApi.listNamespacedPod('default')
+  k8sApi.listNamespacedPod(namespace)
     .then((re) => {
       return res.status(200).json(re.body);
     })
@@ -52,7 +58,7 @@ app.get('/pod', (req, res) => {
 });
 
 app.get('/service', (req, res) => {
-  k8sApi.listNamespacedService('default')
+  k8sApi.listNamespacedService(namespace)
     .then((re) => {
       return res.status(200).json(re.body);
     })
@@ -62,7 +68,7 @@ app.get('/service', (req, res) => {
 });
 
 app.get('/ingress', (req, res) => {
-  k8sApi2.listNamespacedIngress('default')
+  k8sNetworkApi.listNamespacedIngress(namespace)
     .then((re) => {
       return res.status(200).json(re.body);
     })
@@ -72,7 +78,7 @@ app.get('/ingress', (req, res) => {
 });
 
 app.get('/deployment', (req, res) => {
-  k8sApi2.listNamespacedDeployment('default')
+  k8sAppApi.listNamespacedDeployment(namespace)
     .then((re) => {
       return res.status(200).json(re.body);
     })
@@ -82,7 +88,7 @@ app.get('/deployment', (req, res) => {
 });
 
 app.get('/daemonset', (req, res) => {
-  k8sApi2.listNamespacedDaemonSet('default')
+  k8sAppApi.listNamespacedDaemonSet(namespace)
     .then((re) => {
       res.json(re.body);
     })

@@ -153,20 +153,20 @@ class App extends React.Component {
 	
 	componentDidMount() {
 		// this fetch receives the pod list
-		fetch('http://localhost:3000')
+		fetch('http://localhost:8080')
 		  .then((podData) => {
 				// console.log(data);
 				return podData.json();
 			})
 			.then((podObject) => {
 				// this fetch receives the service list
-				fetch('http://localhost:3000/service')
+				fetch('http://localhost:8080/service')
 					.then((serviceData) => {
 						return serviceData.json();
 					})
 					.then((serviceObject) => {
 						console.log('serviceobject',serviceObject);
-						fetch('http://localhost:3000/ingress')
+						fetch('http://localhost:8080/ingress')
 						  .then((ingressData) => {
 								return ingressData.json();
 							})

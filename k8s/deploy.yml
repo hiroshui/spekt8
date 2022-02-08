@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spekt8-app
+spec:
+  selector:
+    matchLabels:
+      component: spekt8-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: spekt8-app
+    spec:
+      containers:
+        - name: spekt8-app
+          image: hiroshui/spekt8
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+          - name: NAMESPACE #ToDo: namespace-list.. instead of only one ns
+            value: ${OBSERVED_NAMESPACE}
